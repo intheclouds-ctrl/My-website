@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Strength Checker</title>
+    <style>
+        /* Add your existing CSS here */
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #1f1f1f;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .header {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #2c2c2c;
+            color: #ffffff;
+        }
+        .button {
+            background-color: #6200ea;
+            color: #ffffff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #3700b3;
+        }
+/* Heart rain effect CSS */
+.heart {
+    position: absolute;
+    top: 0;
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    animation: fall 2s linear infinite;
+}
+
+.heart::before {
+    content: '💞';
+    display: block;
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(100vh);
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Password Strength Checker</h1>
+        <div class="input-group">
+            <label for="password-input">Enter your password:</label>
+            <input type="password" id="password-input" name="password">
+        </div>
+        <div id="strength-meter">
+            <div></div>
+        </div>
+        <div id="strength-text"></div>
+        <div id="suggestions"></div>
+        <div id="entropy"></div>
+        <div id="common-warning"></div>
+        <div id="policy-reminder"></div>
+        <div id="positive-reinforcement"></div>
+    </div>
+    <script>
+const passwordInput = document.getElementById('password-input');
+const strengthMeter = document.getElementById('strength-meter').firstElementChild;
+const strengthText = document.getElementById('strength-text');
+const suggestions = document.getElementById('suggestions');
+const entropy = document.getElementById('entropy');
+const commonWarning = document.getElementById('common-warning');
+const policyReminder = document.getElementById('policy-reminder');
+const positiveReinforcement = document.getElementById('positive-reinforcement');
+
+const commonPasswords = ['password', '123456', 'qwerty', 'admin', 'letmein', 'welcome'];
+
+passwordInput.addEventListener('input', checkPassword);
+passwordInput.addEventListener('keyup', function(event) {
+    if (event.key === 'Enter') {
+        checkPassword();
+    }
+});
+
+// Add the new event listener for 'arleen'
+passwordInput.addEventListener('input', function() {
+    const value = passwordInput.value.toLowerCase();
+    if (value.includes('arleen')) {
+        createHeartRain();
+    }
+});
+
+// Add the new event listener for 'resume'
+passwordInput.addEventListener('input', function() {
+    const value = passwordInput.value.toLowerCase();
+    if (value.includes('resume')) {
+        showResumePopup();
+    }
+});
+
+function showResumePopup() {
+    window.location.href = 'resume.html'; // Redirect to the new resume page
+}
+
+function checkPassword() {
+    const password = passwordInput.value;
+    const strength = calculatePasswordStrength(password);
+
+    strengthMeter.style.backgroundColor = getColor(strength);
+    strengthMeter.style.width = `${strength}%`;
+
+    strengthText.textContent = `Password Strength: ${getStrengthText(strength)}`;
+    suggestions.textContent = `Suggestions: ${getSuggestions(password)}`;
+    entropy.textContent = `Estimated time to crack: ${calculateEntropy(password)}`;
+    commonWarning.textContent = commonPasswords.includes(password.toLowerCase()) ? 
+        'Warning: This is a commonly used password!' : '';
+    policyReminder.textContent = 'Password Policy: At least 8 characters long, include uppercase, lowercase, numbers, and special characters.';
+    positiveReinforcement.textContent = strength === 100 ? 'Excellent! You\'ve created a strong, unique password.' : '';
+}
+
+function calculatePasswordStrength(password) {
+    let strength = 0;
+    if (password.length >= 8) strength += 25;
+    if (password.match(/[a-z]+/)) strength += 25;
+    if (password.match(/[A-Z]+/)) strength += 25;
+    if (password.match(/[0-9]+/)) strength += 25;
+    if (password.match(/[$@#&!]+/)) strength += 25;
+    return Math.min(100, strength);
+}
+
+function getColor(strength) {
+    if (strength < 50) return '#ff3b30';
+    if (strength < 75) return '#ff9500';
+    return '#4cd964';
+}
+
+function getStrengthText(strength) {
+    if (strength < 50) return 'Weak';
+    if (strength < 75) return 'Moderate';
+    return 'Strong';
+}
+
+function getSuggestions(password) {
+    let suggestions = [];
+    if (password.length < 8) suggestions.push('Make it longer');
+    if (!password.match(/[a-z]+/)) suggestions.push('Add lowercase letters');
+    if (!password.match(/[A-Z]+/)) suggestions.push('Add uppercase letters');
+    if (!password.match(/[0-9]+/)) suggestions.push('Add numbers');
+    if (!password.match(/[$@#&!]+/)) suggestions.push('Add special characters');
+    return suggestions.join(',\n ') || 'No suggestions';
+}
+
+function calculateEntropy(password) {
+    const length = password.length;
+    const charset = 94; // Assuming all printable ASCII characters
+    const entropy = Math.log2(Math.pow(charset, length));
+    const secondsToCrack = Math.pow(2, entropy) / 1e9; // Assuming 1 billion guesses per second
+
+    if (secondsToCrack < 60) return 'Less than a minute';
+    if (secondsToCrack < 3600) return `${Math.round(secondsToCrack / 60)} minutes`;
+    if (secondsToCrack < 86400) return `${Math.round(secondsToCrack / 3600)} hours`;
+    if (secondsToCrack < 31536000) return `${Math.round(secondsToCrack / 86400)} days`;
+    return `${Math.round(secondsToCrack / 31536000)} years`;
+}
+
+function createHeartRain() {
+    for (let i = 0; i < 30; i++) {
+        const heart = document.createElement('div');
+        heart.classList.add('heart');
+        heart.style.left = `${Math.random() * 100}vw`;
+        heart.style.animationDuration = `${Math.random() * 2 + 3}s`;
+        document.body.appendChild(heart);
+
+        setTimeout(() => {
+            heart.remove();
+        }, 15000);
+    }
+}
+    </script>
+</body>
+</html>
