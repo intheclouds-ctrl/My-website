@@ -22,29 +22,29 @@
         .chat-title {
             text-align: center;
             font-size: 1.2em;
-            margin-bottom: 10px;
+            margin-bottom: 10px.
         }
         .chat-box {
             height: 300px;
             overflow-y: scroll;
             border: 1px solid #ccc;
             padding: 10px;
-            margin-bottom: 10px;
+            margin-bottom: 10px.
         }
         .chat-input {
             width: calc(100% - 22px);
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            padding: 10px.
+            border: 1px solid #ccc.
+            border-radius: 5px.
         }
         .chat-button {
-            width: 100%;
-            padding: 10px;
-            background-color: #333;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
+            width: 100%.
+            padding: 10px.
+            background-color: #333.
+            color: #fff.
+            border: none.
+            border-radius: 5px.
+            cursor: pointer.
         }
     </style>
 </head>
@@ -63,32 +63,23 @@
 
         const responses = {
             "password reset": "To reset your password, please follow the instructions on the password reset page.",
-            "cannot connect to wifi": "Please ensure your WiFi is turned on and you are within range of the network.",
-            "software installation": "For software installation, please follow the guidelines provided in the IT policy.",
-            "default": "I can't help with that. Please reach out to your IT department for further assistance."
+            "network issues": "If you're experiencing network issues, try restarting your router. If the problem persists, contact IT support.",
+            "software installation": "For software installation requests, please fill out the software request form on the IT portal.",
+            "email setup": "To set up your email, follow the step-by-step guide available on the IT support page.",
+            "account locked": "If your account is locked, please contact IT support to unlock it.",
+            "slow computer": "Try restarting your computer and closing unnecessary programs. If the issue persists, contact IT support.",
+            "printer issues": "Ensure the printer is turned on and connected to the network. Check for any error messages on the printer display.",
+            "VPN problems": "Verify your VPN settings and ensure you have a stable internet connection. If issues continue, contact IT support."
         };
 
         chatButton.addEventListener('click', () => {
             const userMessage = chatInput.value.toLowerCase();
-            addMessageToChatBox(`You: ${chatInput.value}`);
+            const response = responses[userMessage] || "I'm sorry, I don't have information on that issue. Please contact IT support for further assistance.";
+            chatBox.innerHTML += `<div><strong>You:</strong> ${chatInput.value}</div>`;
+            chatBox.innerHTML += `<div><strong>Bot:</strong> ${response}</div>`;
             chatInput.value = '';
-
-            let response = responses["default"];
-            for (let key in responses) {
-                if (userMessage.includes(key)) {
-                    response = responses[key];
-                    break;
-                }
-            }
-            addMessageToChatBox(`Bot: ${response}`);
-        });
-
-        function addMessageToChatBox(message) {
-            const messageElement = document.createElement('div');
-            messageElement.textContent = message;
-            chatBox.appendChild(messageElement);
             chatBox.scrollTop = chatBox.scrollHeight;
-        }
+        });
     </script>
 </body>
 </html>
