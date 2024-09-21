@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Red Team vs Blue Team</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        #visualization {
+            width: 600px;
+            height: 400px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .team {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .red-team {
+            background-color: rgba(255, 0, 0, 0.5);
+        }
+
+        .blue-team {
+            background-color: rgba(0, 0, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div id="visualization"></div>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script>
+        const steps = [
+            { step: 1, redAction: "Reconnaissance", blueAction: "Monitoring" },
+            { step: 2, redAction: "Exploitation", blueAction: "Detection" },
+            { step: 3, redAction: "Privilege Escalation", blueAction: "Containment" },
+            { step: 4, redAction: "Data Exfiltration", blueAction: "Eradication" },
+            { step: 5, redAction: "Cover Tracks", blueAction: "Recovery" }
+        ];
+
+        const visualization = d3.select("#visualization");
+
+        function drawStep(stepData) {
+            visualization.selectAll("*").remove();
+
+            visualization.append("div")
+                .attr("class", "team red-team")
+                .style("left", "50px")
+                .style("top", "150px")
+                .text("Red Team");
+
+            visualization.append("div")
+                .attr("class", "team blue-team")
+                .style("left", "450px")
+                .style("top", "150px")
+                .text("Blue Team");
+
+            visualization.append("div")
+                .attr("class", "action red-action")
+                .style("left", "50px")
+                .style("top", "250px")
+                .text(`Action: ${stepData.redAction}`);
+
+            visualization.append("div")
+                .attr("class", "action blue-action")
+                .style("left", "450px")
+                .style("top", "250px")
+                .text(`Action: ${stepData.blueAction}`);
+        }
+
+        let currentStep = 0;
+
+        function nextStep() {
+            if (currentStep < steps.length) {
+                drawStep(steps[currentStep]);
+                currentStep++;
+                setTimeout(nextStep, 1000);
+            }
+        }
+
+        nextStep();
+    </script>
+</body>
+</html>
