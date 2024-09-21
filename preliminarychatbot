@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Helpdesk Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .chat-container {
+            width: 300px;
+            margin: 50px auto;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        .chat-box {
+            height: 300px;
+            overflow-y: scroll;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .chat-input {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .chat-button {
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-box" id="chat-box"></div>
+        <input type="text" id="chat-input" class="chat-input" placeholder="Type your message...">
+        <button id="chat-button" class="chat-button">Send</button>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById('chat-box');
+        const chatInput = document.getElementById('chat-input');
+        const chatButton = document.getElementById('chat-button');
+
+        const responses = {
+            "password reset": "To reset your password, please follow the instructions on the password reset page.",
+            "cannot connect to wifi": "Please ensure your WiFi is turned on and you are within range of the network.",
+            "software installation": "For software installation, please follow the guidelines provided in the IT policy.",
+            "default": "I can't help with that. Please reach out to your IT department for further assistance."
+        };
+
+        chatButton.addEventListener('click', () => {
+            const userMessage = chatInput.value.toLowerCase();
+            addMessageToChatBox(`You: ${chatInput.value}`);
+            chatInput.value = '';
+
+            let response = responses["default"];
+            for (let key in responses) {
+                if (userMessage.includes(key)) {
+                    response = responses[key];
+                    break;
+                }
+            }
+            addMessageToChatBox(`Bot: ${response}`);
+        });
+
+        function addMessageToChatBox(message) {
+            const messageElement = document.createElement('div');
+            messageElement.textContent = message;
+            chatBox.appendChild(messageElement);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+</body>
+</html>
