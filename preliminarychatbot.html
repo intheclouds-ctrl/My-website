@@ -32,7 +32,7 @@
       "account locked": "If your account is locked, please contact IT support to unlock it.",
       "slow computer": "Try restarting your computer and closing unnecessary programs. If the issue persists, contact IT support.",
       "printer issues": "Ensure the printer is turned on and connected to the network. Check for any error messages on the printer display.",
-      "VPN problems": "Verify your VPN settings and ensure you have a stable internet connection. If issues continue, contact IT support.",
+      "VPN problems": "Please specify which VPN service you're using for more tailored advice.",
       // Additional responses for common IT issues
       "remote access": "To request remote access, please submit a ticket through the IT portal.",
       "hardware replacement": "For hardware replacement requests, please contact IT support directly.",
@@ -53,6 +53,14 @@
       "Slow computer"
     ];
 
+    // Vendor-specific advice
+    const vpnVendors = {
+      "nordvpn": "For NordVPN-related issues, please contact their support team at [NordVPN support email/phone number].",
+      "expressvpn": "If you're using ExpressVPN, reach out to their support team at [ExpressVPN support email/phone number].",
+      "surfshark": "For Surfshark support, please visit their website or contact them at [Surfshark support email/phone number].",
+      // Add more vendors as needed
+    };
+
     // Clickable subtitle functionality
     chatSubtitle.addEventListener('click', () => {
       chatBox.innerHTML += `<div><strong>Top 6 Common Issues:</strong></div>`;
@@ -64,11 +72,34 @@
     chatButton.addEventListener('click', () => {
       const userMessage = chatInput.value.toLowerCase();
       const response = responses[userMessage] || responses.default;
+
+      // Check for VPN-related queries
+      if (userMessage.includes("vpn") || userMessage.includes("virtual private network")) {
+        const vpnVendor = getUserVpnVendor(userMessage);
+        if (vpnVendor) {
+          response = vpnVendors[vpnVendor];
+        } else {
+          response = "Please specify which VPN service you're using for more tailored advice.";
+        }
+      }
+
       chatBox.innerHTML += `<div><strong>You:</strong> ${chatInput.value}</div>`;
       chatBox.innerHTML += `<div><strong>Bot:</strong> ${response}</div>`;
       chatInput.value = '';
       chatBox.scrollTop = chatBox.scrollHeight;
     });
+
+    function getUserVpnVendor(message) {
+      // Implement a more sophisticated logic to extract the VPN vendor from the message
+      // For example, use regular expressions or natural language processing
+      const vpnKeywords = ["nordvpn", "expressvpn", "surfshark"];
+      for (const keyword of vpnKeywords) {
+        if (message.includes(keyword)) {
+          return keyword;
+        }
+      }
+      return null;
+    }
   </script>
 </body>
 </html>
