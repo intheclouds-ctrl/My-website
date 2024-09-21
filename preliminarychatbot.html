@@ -1,85 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IT Helpdesk Chatbot</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        .chat-container {
-            width: 300px;
-            margin: 50px auto;
-            background-color: #fff;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-        }
-        .chat-title {
-            text-align: center;
-            font-size: 1.2em;
-            margin-bottom: 10px.
-        }
-        .chat-box {
-            height: 300px;
-            overflow-y: scroll;
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 10px.
-        }
-        .chat-input {
-            width: calc(100% - 22px);
-            padding: 10px.
-            border: 1px solid #ccc.
-            border-radius: 5px.
-        }
-        .chat-button {
-            width: 100%.
-            padding: 10px.
-            background-color: #333.
-            color: #fff.
-            border: none.
-            border-radius: 5px.
-            cursor: pointer.
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IT Helpdesk Chatbot</title>
+  <style>
+    /* ... (rest of the CSS) */
+  </style>
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-title">IT Helpdesk Support</div>
-        <div class="chat-box" id="chat-box"></div>
-        <input type="text" id="chat-input" class="chat-input" placeholder="Type your message...">
-        <button id="chat-button" class="chat-button">Send</button>
-    </div>
+  <div class="chat-container">
+    <div class="chat-title">IT Helpdesk Support</div>
+    <div class="chat-subtitle clickable" id="chat-subtitle">Top 6 Common Issues</div>
+    <div class="chat-box" id="chat-box"></div>
+    <input type="text" id="chat-input" class="chat-input" placeholder="Type your message...">
+    <button id="chat-button" class="chat-button">Send</button>
+  </div>
 
-    <script>
-        const chatBox = document.getElementById('chat-box');
-        const chatInput = document.getElementById('chat-input');
-        const chatButton = document.getElementById('chat-button');
+  <script>
+    const chatBox = document.getElementById('chat-box');
+    const chatInput = document.getElementById('chat-input');
+    const chatButton = document.getElementById('chat-button');
+    const chatSubtitle = document.getElementById('chat-subtitle');
 
-        const responses = {
-            "password reset": "To reset your password, please follow the instructions on the password reset page.",
-            "network issues": "If you're experiencing network issues, try restarting your router. If the problem persists, contact IT support.",
-            "software installation": "For software installation requests, please fill out the software request form on the IT portal.",
-            "email setup": "To set up your email, follow the step-by-step guide available on the IT support page.",
-            "account locked": "If your account is locked, please contact IT support to unlock it.",
-            "slow computer": "Try restarting your computer and closing unnecessary programs. If the issue persists, contact IT support.",
-            "printer issues": "Ensure the printer is turned on and connected to the network. Check for any error messages on the printer display.",
-            "VPN problems": "Verify your VPN settings and ensure you have a stable internet connection. If issues continue, contact IT support."
-        };
+    // Improved response handling
+    const responses = {
+      "password reset": "To reset your password, please follow the instructions on the password reset page.",
+      "network issues": "If you're experiencing network issues, try restarting your router. If the problem persists, contact IT support.",
+      "software installation": "For software installation requests, please fill out the software request form on the IT portal.",
+      "email setup": "To set up your email, follow the step-by-step guide available on the IT support page.",
+      "account locked": "If your account is locked, please contact IT support to unlock it.",
+      "slow computer": "Try restarting your computer and closing unnecessary programs. If the issue persists, contact IT support.",
+      "printer issues": "Ensure the printer is turned on and connected to the network. Check for any error messages on the printer display.",
+      "VPN problems": "Verify your VPN settings and ensure you have a stable internet connection. If issues continue, contact IT support.",
+      // Additional responses for common IT issues
+      "remote access": "To request remote access, please submit a ticket through the IT portal.",
+      "hardware replacement": "For hardware replacement requests, please contact IT support directly.",
+      "internet connection": "If you're having trouble connecting to the internet, check your network cable and router settings.",
+      "email troubleshooting": "For email troubleshooting, please provide more details about the issue you're facing.",
+      "software updates": "To check for software updates, go to the software center on your device.",
+      // Default response for unknown queries
+      "default": "I couldn't find a relevant response for your query. Please provide more details or contact IT support for assistance."
+    };
 
-        chatButton.addEventListener('click', () => {
-            const userMessage = chatInput.value.toLowerCase();
-            const response = responses[userMessage] || "I'm sorry, I don't have information on that issue. Please contact IT support for further assistance.";
-            chatBox.innerHTML += `<div><strong>You:</strong> ${chatInput.value}</div>`;
-            chatBox.innerHTML += `<div><strong>Bot:</strong> ${response}</div>`;
-            chatInput.value = '';
-            chatBox.scrollTop = chatBox.scrollHeight;
-        });
-    </script>
+    // Top 6 common helpdesk issues
+    const topIssues = [
+      "Password reset",
+      "Network issues",
+      "Software installation",
+      "Email setup",
+      "Account locked",
+      "Slow computer"
+    ];
+
+    // Clickable subtitle functionality
+    chatSubtitle.addEventListener('click', () => {
+      chatBox.innerHTML += `<div><strong>Top 6 Common Issues:</strong></div>`;
+      topIssues.forEach(issue => {
+        chatBox.innerHTML += `<div>&#8226; ${issue}</div>`;
+      });
+    });
+
+    chatButton.addEventListener('click', () => {
+      const userMessage = chatInput.value.toLowerCase();
+      const response = responses[userMessage] || responses.default;
+      chatBox.innerHTML += `<div><strong>You:</strong> ${chatInput.value}</div>`;
+      chatBox.innerHTML += `<div><strong>Bot:</strong> ${response}</div>`;
+      chatInput.value = '';
+      chatBox.scrollTop = chatBox.scrollHeight;
+    });
+  </script>
 </body>
 </html>
