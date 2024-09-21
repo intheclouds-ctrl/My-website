@@ -19,6 +19,11 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             padding: 20px;
         }
+        .chat-title {
+            text-align: center;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
         .chat-box {
             height: 300px;
             overflow-y: scroll;
@@ -45,6 +50,7 @@
 </head>
 <body>
     <div class="chat-container">
+        <div class="chat-title">IT Helpdesk Support</div>
         <div class="chat-box" id="chat-box"></div>
         <input type="text" id="chat-input" class="chat-input" placeholder="Type your message...">
         <button id="chat-button" class="chat-button">Send</button>
