@@ -160,7 +160,10 @@
                 }, 2000);
             }
 
-            // Update paddles' colors if infected
+            // Draw court
+            drawCourt();
+
+            // Draw paddles
             if (user.infected) {
                 drawRect(user.x, user.y, paddle.width, paddle.height, 'green');
             } else {
@@ -179,9 +182,6 @@
             } else {
                 drawCircle(ball.x, ball.y, ball.radius, 'white');
             }
-
-            // Draw court
-            drawCourt();
         }
 
         // Game loop
