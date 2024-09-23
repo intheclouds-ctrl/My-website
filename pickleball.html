@@ -80,12 +80,36 @@
             ctx.fillRect(x, y, w, h);
         }
 
-        function drawCircle(x, y, r, color) {
-            ctx.fillStyle = color;
+        function drawPickleball(x, y, radius, infected) {
+            ctx.save();
             ctx.beginPath();
-            ctx.arc(x, y, r, 0, Math.PI * 2, false);
-            ctx.closePath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2, false);
+            ctx.fillStyle = infected ? '#ff6b6b' : '#ffeb3b';
             ctx.fill();
+            ctx.closePath();
+
+            // Draw holes
+            const holePositions = [
+                {x: 0, y: 0},
+                {x: 0.5, y: 0.5},
+                {x: -0.5, y: 0.5},
+                {x: 0.5, y: -0.5},
+                {x: -0.5, y: -0.5},
+                {x: 0.7, y: 0},
+                {x: -0.7, y: 0},
+                {x: 0, y: 0.7},
+                {x: 0, y: -0.7}
+            ];
+
+            ctx.fillStyle = infected ? '#ff0000' : '#ffd600';
+            holePositions.forEach(pos => {
+                ctx.beginPath();
+                ctx.arc(x + pos.x * radius * 0.7, y + pos.y * radius * 0.7, radius * 0.15, 0, Math.PI * 2, false);
+                ctx.fill();
+                ctx.closePath();
+            });
+
+            ctx.restore();
         }
 
         function drawText(text, x, y, color) {
@@ -196,7 +220,7 @@
             ball.dx = -ball.dx;
 
             const wasInfected = ball.infected;
-            ball.infected = Math.random() < 0.4;
+            ball.infected = Math.random() < 0.9;
 
             if (ball.infected && !wasInfected) {
                 infectionAnnouncement.style.display = 'block';
@@ -210,7 +234,7 @@
             drawCourt();
             drawRect(user.x, user.y, paddle.width, paddle.height, user.infected ? '#f00' : '#fff');
             drawRect(com.x, com.y, paddle.width, paddle.height, com.infected ? '#f00' : '#fff');
-            drawCircle(ball.x, ball.y, ball.radius + ball.infectionGrowth, ball.infected ? '#f00' : '#000');
+            drawPickleball(ball.x, ball.y, ball.radius + ball.infectionGrowth, ball.infected);
             drawText(user.score, canvas.width / 4, canvas.height / 5, '#000');
             drawText(com.score, 3 * canvas.width / 4, canvas.height / 5, '#000');
         }
