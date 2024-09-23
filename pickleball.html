@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pickleball Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        #gameCanvas {
+            border: 2px solid #000;
+        }
+        #announcement {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            color: red;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
+    <div id="announcement">Ball has been infected</div>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const announcement = document.getElementById('announcement');
+
+        // Game objects
+        const ball = {
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            radius: 10,
+            speed: 5,
+            dx: 5,
+            dy: 5,
+            infected: false // Ball infection flag
+        };
+
+        const paddle = {
+            width: 10,
+            height: 100,
+            y: canvas.height / 2 - 50,
+            infected: false // Paddle infection flag
+        };
+
+        const user = {
+            x: 10,
+            y: canvas.height / 2 - 50,
+            score: 0
+        };
+
+        const com = {
+            x: canvas.width - 20,
+            y: canvas.height / 2 - 50,
+            score: 0
+        };
+
+        let gameStartTime;
+        let infectionTimeout;
+
+        // Draw functions
+        function drawRect(x, y, w, h, color) {
+            ctx.fillStyle = color;
+            ctx.fillRect(x, y, w, h);
+        }
+
+        function drawCircle(x, y, r, color) {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, Math.PI * 2, false);
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        function drawText(text, x, y, color) {
+            ctx.fillStyle = color;
+            ctx.font = '45px Arial';
+            ctx.fillText(text, x, y);
+        }
+
+        function drawCourt() {
+            // Clay court color
+            drawRect(0, 0, canvas.width, canvas.height, '#D2691E');
+            
+            // Court lines
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            // Sidelines
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, canvas.height);
+            ctx.moveTo(canvas.width, 0);
+            ctx.lineTo(canvas.width, canvas.height);
+            
+            // Baselines
+            ctx.moveTo(0, 0);
+            ctx.lineTo(canvas.width, 0);
+            ctx.moveTo(0, canvas.height);
+            ctx.lineTo(canvas.width, canvas.height);
+            
+            // Net
+            ctx.moveTo(canvas.width / 2, 0);
+            ctx.lineTo(canvas.width / 2, canvas.height);
+            
+            ctx.stroke();
+        }
+
+        // Update game state
+        function update() {
+            ball.x += ball.dx;
+            ball.y += ball.dy;
+
+            // Increase computer's speed over time (more gradually)
+            const elapsedTime = (Date.now() - gameStartTime) / 1000;
+            const speedMultiplier = Math.min(1.5, 1 + elapsedTime / 300); // Max 1.5x speed after 5 minutes
+
+            // Simple AI for computer paddle
+            const computerSpeed = 3 * speedMultiplier; // Reduced initial speed
+            if (com.y + paddle.height / 2 < ball.y) {
+                com.y += computerSpeed;
+            } else {
+                com.y -= computerSpeed;
+            }
+
+            // Ball collision with top and bottom walls
+            if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
+                ball.dy *= -1;
+            }
+
+            // Ball collision with paddles
+            if (ball.x - ball.radius < user.x + paddle.width && ball.y > user.y && ball.y < user.y + paddle.height) {
+                ball.dx *= -1;
+                if (ball.infected) {
+                    user.infected = true;
+                }
+            } else if (ball.x + ball.radius > com.x && ball.y > com.y && ball.y < com.y + paddle.height) {
+                ball.dx *= -1;
+                if (ball.infected) {
+                    com.infected = true;
+                }
+            }
+
+            // Check for infection
+            if (ball.infected) {
+                announcement.style.display = 'block';
+                setTimeout(() => {
+                    announcement.style.display = 'none';
+                }, 2000);
+            }
+
+            // Update paddles' colors if infected
+            if (user.infected) {
+                drawRect(user.x, user.y, paddle.width, paddle.height, 'green');
+            } else {
+                drawRect(user.x, user.y, paddle.width, paddle.height, 'blue');
+            }
+
+            if (com.infected) {
+                drawRect(com.x, com.y, paddle.width, paddle.height, 'green');
+            } else {
+                drawRect(com.x, com.y, paddle.width, paddle.height, 'red');
+            }
+
+            // Draw ball
+            if (ball.infected) {
+                drawCircle(ball.x, ball.y, ball.radius, 'purple');
+            } else {
+                drawCircle(ball.x, ball.y, ball.radius, 'white');
+            }
+
+            // Draw court
+            drawCourt();
+        }
+
+        // Game loop
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            update();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Start game
+        function startGame() {
+            gameStartTime = Date.now();
+            gameLoop();
+        }
+
+        startGame();
+    </script>
+</body>
+</html>
