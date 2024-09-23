@@ -126,9 +126,10 @@
             const elapsedTime = (Date.now() - gameStartTime) / 1000;
             const speedMultiplier = Math.min(1.5, 1 + elapsedTime / 300); // Max 1.5x speed after 5 minutes
 
-            // Simple AI for computer paddle
+            // Simple AI for computer paddle with added entropy
             const computerSpeed = 3 * speedMultiplier; // Reduced initial speed
-            if (com.y + paddle.height / 2 < ball.y) {
+            const entropy = Math.random() * 2 - 1; // Random value between -1 and 1
+            if (com.y + paddle.height / 2 < ball.y + entropy) {
                 com.y += computerSpeed;
             } else {
                 com.y -= computerSpeed;
@@ -160,10 +161,7 @@
                 }, 2000);
             }
 
-            // Draw court
-            drawCourt();
-
-            // Draw paddles
+            // Update paddles' colors if infected
             if (user.infected) {
                 drawRect(user.x, user.y, paddle.width, paddle.height, 'green');
             } else {
@@ -182,6 +180,9 @@
             } else {
                 drawCircle(ball.x, ball.y, ball.radius, 'white');
             }
+
+            // Draw court
+            drawCourt();
         }
 
         // Game loop
@@ -196,6 +197,12 @@
             gameStartTime = Date.now();
             gameLoop();
         }
+
+        // Mouse movement for user paddle
+        canvas.addEventListener('mousemove', (event) => {
+            const rect = canvas.getBoundingClientRect();
+            user.y = event.clientY - rect.top - paddle.height / 2;
+        });
 
         startGame();
     </script>
