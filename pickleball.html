@@ -17,24 +17,26 @@
         #gameCanvas {
             border: 2px solid #000;
         }
-        #announcement {
+        #infectionAnnouncement {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 48px;
-            color: red;
+            font-size: 36px;
+            font-weight: bold;
+            color: #ff0000;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
             display: none;
         }
     </style>
 </head>
 <body>
     <canvas id="gameCanvas" width="800" height="400"></canvas>
-    <div id="announcement">Ball has been infected</div>
+    <div id="infectionAnnouncement">Ball has been infected!</div>
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        const announcement = document.getElementById('announcement');
+        const infectionAnnouncement = document.getElementById('infectionAnnouncement');
 
         // Game objects
         const ball = {
@@ -44,26 +46,29 @@
             speed: 5,
             dx: 5,
             dy: 5,
-            infected: false // Ball infection flag
+            infected: false,
+            infectionGrowth: 0
         };
 
         const paddle = {
             width: 10,
             height: 100,
             y: canvas.height / 2 - 50,
-            infected: false // Paddle infection flag
+            infected: false
         };
 
         const user = {
             x: 10,
             y: canvas.height / 2 - 50,
-            score: 0
+            score: 0,
+            infected: false
         };
 
         const com = {
             x: canvas.width - 20,
             y: canvas.height / 2 - 50,
-            score: 0
+            score: 0,
+            infected: false
         };
 
         let gameStartTime;
@@ -90,27 +95,22 @@
         }
 
         function drawCourt() {
-            // Clay court color
             drawRect(0, 0, canvas.width, canvas.height, '#D2691E');
             
-            // Court lines
             ctx.strokeStyle = 'white';
             ctx.lineWidth = 2;
             ctx.beginPath();
             
-            // Sidelines
             ctx.moveTo(0, 0);
             ctx.lineTo(0, canvas.height);
             ctx.moveTo(canvas.width, 0);
             ctx.lineTo(canvas.width, canvas.height);
             
-            // Baselines
             ctx.moveTo(0, 0);
             ctx.lineTo(canvas.width, 0);
             ctx.moveTo(0, canvas.height);
             ctx.lineTo(canvas.width, canvas.height);
             
-            // Net
             ctx.moveTo(canvas.width / 2, 0);
             ctx.lineTo(canvas.width / 2, canvas.height);
             
@@ -122,89 +122,116 @@
             ball.x += ball.dx;
             ball.y += ball.dy;
 
-            // Increase computer's speed over time (more gradually)
             const elapsedTime = (Date.now() - gameStartTime) / 1000;
-            const speedMultiplier = Math.min(1.5, 1 + elapsedTime / 300); // Max 1.5x speed after 5 minutes
+            const speedMultiplier = Math.min(1.5, 1 + elapsedTime / 300);
 
-            // Simple AI for computer paddle with added entropy
-            const computerSpeed = 3 * speedMultiplier; // Reduced initial speed
-            const entropy = Math.random() * 2 - 1; // Random value between -1 and 1
-            if (com.y + paddle.height / 2 < ball.y + entropy) {
+            const computerSpeed = 3 * speedMultiplier;
+            if (com.y + paddle.height / 2 < ball.y) {
                 com.y += computerSpeed;
             } else {
                 com.y -= computerSpeed;
             }
 
-            // Ball collision with top and bottom walls
             if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
                 ball.dy *= -1;
             }
 
-            // Ball collision with paddles
-            if (ball.x - ball.radius < user.x + paddle.width && ball.y > user.y && ball.y < user.y + paddle.height) {
+            let player = (ball.x < canvas.width / 2) ? user : com;
+            if (collision(ball, player)) {
                 ball.dx *= -1;
+                ball.speed += 0.1;
+
                 if (ball.infected) {
-                    user.infected = true;
-                }
-            } else if (ball.x + ball.radius > com.x && ball.y > com.y && ball.y < com.y + paddle.height) {
-                ball.dx *= -1;
-                if (ball.infected) {
-                    com.infected = true;
+                    player.infected = true;
+                    clearTimeout(infectionTimeout);
+                    infectionTimeout = setTimeout(() => {
+                        user.infected = false;
+                        com.infected = false;
+                    }, 3000);
                 }
             }
 
-            // Check for infection
-            if (ball.infected) {
-                announcement.style.display = 'block';
-                setTimeout(() => {
-                    announcement.style.display = 'none';
-                }, 2000);
+            if (ball.x - ball.radius < 0) {
+                com.score++;
+                resetBall();
+            } else if (ball.x + ball.radius > canvas.width) {
+                user.score++;
+                resetBall();
             }
 
-            // Update paddles' colors if infected
             if (user.infected) {
-                drawRect(user.x, user.y, paddle.width, paddle.height, 'green');
-            } else {
-                drawRect(user.x, user.y, paddle.width, paddle.height, 'blue');
+                user.y += Math.random() * 10 - 5;
             }
 
             if (com.infected) {
-                drawRect(com.x, com.y, paddle.width, paddle.height, 'green');
-            } else {
-                drawRect(com.x, com.y, paddle.width, paddle.height, 'red');
+                com.y += Math.random() * 10 - 5;
             }
 
-            // Draw ball
+            // Make the infected ball more dramatic
             if (ball.infected) {
-                drawCircle(ball.x, ball.y, ball.radius, 'purple');
+                ball.infectionGrowth = Math.min(ball.infectionGrowth + 0.1, 5);
             } else {
-                drawCircle(ball.x, ball.y, ball.radius, 'white');
+                ball.infectionGrowth = Math.max(ball.infectionGrowth - 0.1, 0);
             }
-
-            // Draw court
-            drawCourt();
         }
 
-        // Game loop
+        function collision(b, p) {
+            b.top = b.y - b.radius;
+            b.bottom = b.y + b.radius;
+            b.left = b.x - b.radius;
+            b.right = b.x + b.radius;
+
+            p.top = p.y;
+            p.bottom = p.y + paddle.height;
+            p.left = p.x;
+            p.right = p.x + paddle.width;
+
+            return b.right > p.left && b.bottom > p.top && b.left < p.right && b.top < p.bottom;
+        }
+
+        function resetBall() {
+            ball.x = canvas.width / 2;
+            ball.y = canvas.height / 2;
+            ball.speed = 5;
+            ball.dx = -ball.dx;
+
+            const wasInfected = ball.infected;
+            ball.infected = Math.random() < 0.4;
+
+            if (ball.infected && !wasInfected) {
+                infectionAnnouncement.style.display = 'block';
+                setTimeout(() => {
+                    infectionAnnouncement.style.display = 'none';
+                }, 2000);
+            }
+        }
+
+        function render() {
+            drawCourt();
+            drawRect(user.x, user.y, paddle.width, paddle.height, user.infected ? '#f00' : '#fff');
+            drawRect(com.x, com.y, paddle.width, paddle.height, com.infected ? '#f00' : '#fff');
+            drawCircle(ball.x, ball.y, ball.radius + ball.infectionGrowth, ball.infected ? '#f00' : '#000');
+            drawText(user.score, canvas.width / 4, canvas.height / 5, '#000');
+            drawText(com.score, 3 * canvas.width / 4, canvas.height / 5, '#000');
+        }
+
         function gameLoop() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
             update();
+            render();
             requestAnimationFrame(gameLoop);
         }
 
-        // Start game
         function startGame() {
             gameStartTime = Date.now();
             gameLoop();
         }
 
-        // Mouse movement for user paddle
-        canvas.addEventListener('mousemove', (event) => {
-            const rect = canvas.getBoundingClientRect();
-            user.y = event.clientY - rect.top - paddle.height / 2;
+        canvas.addEventListener('mousemove', (e) => {
+            let rect = canvas.getBoundingClientRect();
+            user.y = e.clientY - rect.top - paddle.height / 2;
         });
 
-        startGame();
+        window.onload = startGame;
     </script>
 </body>
 </html>
