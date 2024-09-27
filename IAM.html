@@ -102,6 +102,7 @@
                 nextReview: Date.now()
             };
         });
+        console.log(cardstates); // Check initalization
 
         function updateCard() {
             const currentCard = flashcardData[currentCardIndex];
@@ -119,6 +120,7 @@
 
         function nextCard() {
             currentCardIndex = getNextDueCard();
+            console.log(currentCardIndex);
             isShowingQuestion = true;
             updateCard();
         }
@@ -139,6 +141,7 @@
             }
 
             dueCards.sort((a, b) => a.state.nextReview - b.state.nextReview);
+            console.log(dueCards); // check the due cards
             return dueCards[0].index;
         }
 
