@@ -105,6 +105,7 @@
 
         function updateCard() {
             const currentCard = flashcardData[currentCardIndex];
+            console.log(currentCard);
             flashcardTextElement.textContent = isShowingQuestion ? currentCard.question : currentCard.answer;
             updateProgress();
             assessmentButtons.style.display = isShowingQuestion ? 'none' : 'block';
@@ -170,8 +171,9 @@
         easyBtn.addEventListener('click', () => updateCardState('easy'));
         okBtn.addEventListener('click', () => updateCardState('ok'));
         hardBtn.addEventListener('click', () => updateCardState('hard'));
-
+document.addEventListener('DOMContentLoaded', () => {
         updateCard();
+});
     </script>
 </body>
 </html>
