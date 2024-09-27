@@ -83,7 +83,7 @@
         let currentCardIndex = 0;
         let isShowingQuestion = true;
         let cardStates = [];
-
+document.addEventListener('DOMContentLoaded', () => {
         const flashcardElement = document.getElementById('flashcard');
         const flashcardTextElement = document.getElementById('flashcard-text');
         const flipBtn = document.getElementById('flipBtn');
@@ -174,7 +174,6 @@
         easyBtn.addEventListener('click', () => updateCardState('easy'));
         okBtn.addEventListener('click', () => updateCardState('ok'));
         hardBtn.addEventListener('click', () => updateCardState('hard'));
-document.addEventListener('DOMContentLoaded', () => {
         updateCard();
 });
     </script>
