@@ -83,7 +83,7 @@
         let currentCardIndex = 0;
         let isShowingQuestion = true;
         let cardStates = [];
-document.addEventListener('DOMContentLoaded', () => {
+
         const flashcardElement = document.getElementById('flashcard');
         const flashcardTextElement = document.getElementById('flashcard-text');
         const flipBtn = document.getElementById('flipBtn');
@@ -102,7 +102,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 nextReview: Date.now()
             };
         });
-        console.log(cardStates); // Check initalization
 
         function updateCard() {
             const currentCard = flashcardData[currentCardIndex];
@@ -120,7 +119,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         function nextCard() {
             currentCardIndex = getNextDueCard();
-            console.log(currentCardIndex);
             isShowingQuestion = true;
             updateCard();
         }
@@ -141,7 +139,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             dueCards.sort((a, b) => a.state.nextReview - b.state.nextReview);
-            console.log(dueCards); // check the due cards
             return dueCards[0].index;
         }
 
@@ -174,6 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
         easyBtn.addEventListener('click', () => updateCardState('easy'));
         okBtn.addEventListener('click', () => updateCardState('ok'));
         hardBtn.addEventListener('click', () => updateCardState('hard'));
+document.addEventListener('DOMContentLoaded', () => {
         updateCard();
 });
     </script>
