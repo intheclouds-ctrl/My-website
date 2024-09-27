@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Management Flashcard Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+        }
+        .flashcard {
+            width: 300px;
+            height: 200px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        .flashcard:hover {
+            transform: scale(1.05);
+        }
+        .flashcard-content {
+            padding: 20px;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="flashcard" class="flashcard">
+            <div class="flashcard-content" id="flashcard-text"></div>
+        </div>
+        <button id="flipBtn">Flip</button>
+        <button id="nextBtn">Next</button>
+    </div>
+
+    <script>
+        const flashcardData = [
+            { question: "What is identity lifecycle management?", answer: "The process of managing user identities throughout their entire lifecycle within an organization, from creation to deletion." },
+            { question: "What is Role Based Access Control (RBAC)?", answer: "A method of restricting system access to authorized users based on their role within an organization." },
+            { question: "What is Saviynt IAM used for?", answer: "Saviynt IAM is used to integrate with various identity sources such as Active Directory, LDAP & HR systems for identity and access management." },
+            { question: "What is the purpose of access reviews and audits?", answer: "To ensure compliance with Information Security policies and maintain proper access control." },
+            { question: "What is ServiceNow?", answer: "A cloud computing platform that helps companies manage digital workflows for enterprise operations." },
+            { question: "What are some key responsibilities in access management?", answer: "Granting or denying access to company resources, timely provisioning and de-provisioning of user accounts, and enforcing company policies related to access." },
+            { question: "What is PowerShell used for in this role?", answer: "PowerShell is used for automation and management of Windows systems and applications, particularly useful for managing Microsoft Exchange." },
+            { question: "What is a key aspect of working with internal customers and application teams?", answer: "Understanding access requirements and providing assistance to integrate IAM solutions with enterprise applications and infrastructure." },
+            { question: "What is meant by 'Joiner-Mover-Leaver' in Access Management?", answer: "It refers to managing access rights throughout an employee's lifecycle - when they join the company, change roles, and leave the organization." },
+            { question: "What is the importance of maintaining documentation in Access Management?", answer: "It ensures consistency in processes, aids in training new team members, and helps in compliance and auditing." }
+        ];
+
+        let currentCardIndex = 0;
+        let isShowingQuestion = true;
+
+        const flashcardElement = document.getElementById('flashcard');
+        const flashcardTextElement = document.getElementById('flashcard-text');
+        const flipBtn = document.getElementById('flipBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        function updateCard() {
+            const currentCard = flashcardData[currentCardIndex];
+            flashcardTextElement.textContent = isShowingQuestion ? currentCard.question : currentCard.answer;
+        }
+
+        function flipCard() {
+            isShowingQuestion = !isShowingQuestion;
+            updateCard();
+        }
+
+        function nextCard() {
+            currentCardIndex = (currentCardIndex + 1) % flashcardData.length;
+            isShowingQuestion = true;
+            updateCard();
+        }
+
+        flashcardElement.addEventListener('click', flipCard);
+        flipBtn.addEventListener('click', flipCard);
+        nextBtn.addEventListener('click', nextCard);
+
+        updateCard();
+    </script>
+</body>
+</html>
